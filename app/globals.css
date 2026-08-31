@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #08090b;
+  --surface: #0f1115;
+  --surface-secondary: #15181e;
+  --surface-elevated: #1b1f27;
+  --border: #232730;
+  --border-strong: #323846;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #525c6c;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Cold discipline custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #08090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #232730;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
+
+/* Discipline checkbox styling */
+.cold-checkbox {
+  appearance: none;
+  background-color: #0f1115;
+  border: 1.5px solid #2d3340;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cold-checkbox:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+}
+
+.cold-checkbox:checked {
+  background-color: #10b981;
+  border-color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+}
+
+/* Glass & Cold Surfaces */
+.cold-card {
+  background-color: #0f1115;
+  border: 1px solid #20242c;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.cold-card:hover {
+  border-color: #2e3542;
+}
+
+.cold-card-interactive {
+  background-color: #0f1115;
+  border: 1px solid #20242c;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cold-card-interactive:hover {
+  border-color: #384252;
+  background-color: #13161c;
+}
+
+/* Subtle cold glow */
+.glow-ice {
+  box-shadow: 0 0 20px -5px rgba(56, 189, 248, 0.15);
+}
+.glow-success {
+  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.2);
+}
+
+/* Shimmer animation for loading states */
+@keyframes coldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #15181e 25%, #20242c 50%, #15181e 75%);
+  background-size: 200% 100%;
+  animation: coldShimmer 2s infinite;
+}
