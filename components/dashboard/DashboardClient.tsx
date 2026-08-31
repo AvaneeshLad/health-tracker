@@ -5,8 +5,8 @@ import { TodayProgressCard } from "./TodayProgressCard";
 import { MetricsOverview } from "./MetricsOverview";
 import { CompletionBanner } from "./CompletionBanner";
 import { HabitItem, DashboardHabit } from "./HabitItem";
-import { toggleHabitCompletion, loadWinterArcPreset } from "@/lib/actions/habits";
-import { Plus, Sparkles, AlertCircle } from "lucide-react";
+import { toggleHabitCompletion } from "@/lib/actions/habits";
+import { Plus, AlertCircle, ListPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -27,7 +27,6 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
   const [isPending, startTransition] = useTransition();
-  const [isPresetLoading, setIsPresetLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Optimistic toggle handler
@@ -90,19 +89,6 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
       // Rollback on failure
       setData(previousState);
       setErrorMessage("Failed to save habit status. Please try again.");
-    }
-  };
-
-  const handleLoadWinterArc = async () => {
-    try {
-      setIsPresetLoading(true);
-      await loadWinterArcPreset();
-      router.refresh();
-    } catch (err: any) {
-      console.error("Failed to load preset:", err);
-      setErrorMessage("Could not load preset. Please try again.");
-    } finally {
-      setIsPresetLoading(false);
     }
   };
 
@@ -174,32 +160,24 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
           /* Empty State */
           <div className="rounded-lg border border-border border-dashed p-8 text-center bg-surface/50 space-y-4">
             <div className="w-12 h-12 rounded-full bg-surface-secondary border border-border mx-auto flex items-center justify-center text-cold-400">
-              <Sparkles className="w-6 h-6" />
+              <ListPlus className="w-6 h-6" />
             </div>
             <div className="space-y-1">
               <h3 className="font-mono text-base font-bold text-white uppercase">
                 NO HABITS YET
               </h3>
               <p className="text-xs text-cold-400 max-w-sm mx-auto">
-                Build your daily discipline system. Load the 8-habit Winter Arc
-                standard preset or create your custom habits.
+                Build your daily discipline system by adding your habits.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              <button
-                onClick={handleLoadWinterArc}
-                disabled={isPresetLoading}
-                className="w-full sm:w-auto px-4 py-2.5 rounded bg-white hover:bg-cold-200 text-black font-mono text-xs font-bold tracking-wider uppercase transition-colors disabled:opacity-50"
-              >
-                {isPresetLoading ? "LOADING PRESET..." : "LOAD WINTER ARC PRESET"}
-              </button>
-
+            <div className="flex items-center justify-center pt-2">
               <Link
                 href="/habits"
-                className="w-full sm:w-auto px-4 py-2.5 rounded bg-surface-secondary hover:bg-surface-elevated border border-border text-cold-200 font-mono text-xs font-semibold tracking-wider uppercase transition-colors"
+                className="px-4 py-2.5 rounded bg-white hover:bg-cold-200 text-black font-mono text-xs font-bold tracking-wider uppercase transition-colors flex items-center gap-1.5"
               >
-                CREATE CUSTOM HABIT
+                <Plus className="w-3.5 h-3.5" />
+                <span>CREATE HABIT</span>
               </Link>
             </div>
           </div>

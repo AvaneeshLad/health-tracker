@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   Plus,
-  Sparkles,
   ArrowUp,
   ArrowDown,
   Edit2,
@@ -19,7 +18,6 @@ import {
   toggleHabitActive,
   deleteHabit,
   reorderHabits,
-  loadWinterArcPreset,
 } from "@/lib/actions/habits";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
@@ -46,7 +44,7 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
   const [habits, setHabits] = useState<HabitItemData[]>(initialHabits);
   const [editingHabit, setEditingHabit] = useState<HabitItemData | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [loadingPreset, setLoadingPreset] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const activeHabits = habits.filter((h) => h.isActive);
   const inactiveHabits = habits.filter((h) => !h.isActive);
@@ -63,23 +61,24 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
+  const handlePermanentDelete = async (id: string, name: string) => {
     if (
       !confirm(
-        `Are you sure you want to deactivate "${name}"? Historical completion records will be safely preserved.`
+        `Are you sure you want to permanently delete "${name}"? This action cannot be undone and will delete all completion history for this habit.`
       )
     ) {
       return;
     }
 
     try {
-      await deleteHabit(id, false);
+      setDeletingId(id);
+      await deleteHabit(id, true);
       router.refresh();
-      setHabits((prev) =>
-        prev.map((h) => (h.id === id ? { ...h, isActive: false } : h))
-      );
+      setHabits((prev) => prev.filter((h) => h.id !== id));
     } catch (err) {
-      console.error("Failed to delete habit", err);
+      console.error("Failed to permanently delete habit", err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -102,19 +101,6 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
     }
   };
 
-  const handleLoadPreset = async () => {
-    try {
-      setLoadingPreset(true);
-      await loadWinterArcPreset();
-      router.refresh();
-      window.location.reload();
-    } catch (err) {
-      console.error("Failed to load preset", err);
-    } finally {
-      setLoadingPreset(false);
-    }
-  };
-
   return (
     <div className="space-y-6 font-mono animate-fade-in">
       {/* Top Header & Actions */}
@@ -128,17 +114,7 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
           </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            type="button"
-            onClick={handleLoadPreset}
-            disabled={loadingPreset}
-            className="flex items-center gap-1.5 px-3 py-2 rounded bg-surface border border-border hover:border-cold-ice text-xs text-cold-300 hover:text-white transition-all uppercase tracking-wider"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-cold-ice" />
-            <span>{loadingPreset ? "LOADING..." : "WINTER ARC PRESET"}</span>
-          </button>
-
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setIsCreating(true)}
@@ -254,7 +230,7 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
         ) : (
           <div className="p-8 border border-border border-dashed rounded-lg text-center bg-surface/30 space-y-3">
             <p className="text-xs text-cold-400">
-              No active habits. Create one or load the Winter Arc preset.
+              No active habits. Click "ADD HABIT" to create one.
             </p>
           </div>
         )}
@@ -268,15 +244,15 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
               INACTIVE / ARCHIVED ({inactiveHabits.length})
             </h2>
             <span className="text-[11px] text-cold-600">
-              Historical completion retained
+              Deactivated habits can be reactivated or permanently deleted
             </span>
           </div>
 
-          <div className="space-y-2 opacity-75">
+          <div className="space-y-2">
             {inactiveHabits.map((habit) => (
               <div
                 key={habit.id}
-                className="cold-card rounded-lg p-3.5 flex items-center justify-between gap-3 bg-surface/30"
+                className="cold-card rounded-lg p-3.5 flex items-center justify-between gap-3 bg-surface/30 opacity-80 hover:opacity-100 transition-opacity"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded bg-surface-secondary border border-border flex items-center justify-center text-cold-600 shrink-0">
@@ -296,9 +272,21 @@ export function HabitManager({ initialHabits }: HabitManagerProps) {
                   <button
                     type="button"
                     onClick={() => handleToggleActive(habit.id)}
-                    className="px-2.5 py-1 rounded bg-surface-secondary border border-border hover:border-success text-xs text-cold-300 hover:text-success transition-colors"
+                    className="px-2.5 py-1.5 rounded bg-surface-secondary border border-border hover:border-success text-xs text-cold-300 hover:text-success transition-colors uppercase tracking-wider"
+                    title="Reactivate Habit"
                   >
-                    REACTIVATE
+                    Reactivate
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={deletingId === habit.id}
+                    onClick={() => handlePermanentDelete(habit.id, habit.name)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-danger/10 border border-danger/20 hover:bg-danger/20 hover:border-danger/40 text-xs text-danger-text transition-colors uppercase tracking-wider disabled:opacity-50"
+                    title="Permanently Delete Habit"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>{deletingId === habit.id ? "Deleting..." : "Delete"}</span>
                   </button>
                 </div>
               </div>
