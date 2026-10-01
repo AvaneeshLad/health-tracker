@@ -1,6 +1,6 @@
 {
   "appId": "com.winterarc.tracker",
-  "appName": "WinterArc",
+  "appName": "health-tracker",
   "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
