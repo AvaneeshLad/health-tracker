@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Flame, Lock, Mail, User, Sparkles, AlertCircle, Check } from "lucide-react";
+import { Flame, Lock, Mail, User, Sparkles, AlertCircle, Check, Eye, EyeOff } from "lucide-react";
 import { registerUser } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [winterArcPreset, setWinterArcPreset] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -115,15 +116,28 @@ export default function RegisterPage() {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="•••••••• (6+ characters)"
-                  className="w-full pl-9 pr-3 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm"
+                  className="w-full pl-9 pr-10 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm placeholder-cold-500"
                 />
                 <Lock className="w-4 h-4 text-cold-500 absolute left-3 top-3" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 p-0.5 rounded text-cold-400 hover:text-white transition-colors"
+                  title={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 

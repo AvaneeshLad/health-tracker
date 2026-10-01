@@ -12,6 +12,15 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const resetPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
 export const habitSchema = z.object({
   name: z.string().min(1, "Habit name is required").max(100),
   description: z.string().max(255).optional().nullable(),

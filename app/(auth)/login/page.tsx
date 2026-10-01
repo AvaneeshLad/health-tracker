@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Flame, Lock, Mail, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
+import { Flame, Lock, Mail, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -101,26 +102,47 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@discipline.com"
-                  className="w-full pl-9 pr-3 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm"
+                  className="w-full pl-9 pr-3 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm placeholder-cold-500"
                 />
                 <Mail className="w-4 h-4 text-cold-500 absolute left-3 top-3" />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-cold-300 uppercase tracking-wider">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-cold-300 uppercase tracking-wider">
+                  Password
+                </label>
+                <Link
+                  href="/reset-password"
+                  className="text-[11px] text-cold-ice hover:underline tracking-tight"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm"
+                  className="w-full pl-9 pr-10 py-2.5 rounded bg-surface-secondary border border-border focus:border-cold-ice focus:outline-none text-white text-sm placeholder-cold-500"
                 />
                 <Lock className="w-4 h-4 text-cold-500 absolute left-3 top-3" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 p-0.5 rounded text-cold-400 hover:text-white transition-colors"
+                  title={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 

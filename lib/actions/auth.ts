@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { registerSchema } from "@/lib/validations";
+import { registerSchema, resetPasswordSchema } from "@/lib/validations";
 import { WINTER_ARC_PRESET } from "@/lib/habits/winterArcPreset";
 
 export async function registerUser(formData: {
@@ -54,3 +54,33 @@ export async function registerUser(formData: {
 
   return { success: true, userId: user.id };
 }
+
+export async function resetPassword(formData: {
+  email: string;
+  newPassword: string;
+  confirmPassword: string;
+}) {
+  const validated = resetPasswordSchema.safeParse(formData);
+  if (!validated.success) {
+    throw new Error(validated.error.errors[0]?.message || "Invalid password reset data");
+  }
+
+  const normalizedEmail = validated.data.email.toLowerCase().trim();
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!user) {
+    throw new Error("No account found with this email address");
+  }
+
+  const passwordHash = await bcrypt.hash(validated.data.newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash },
+  });
+
+  return { success: true };
+}
+

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, CheckSquare, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, Calendar, CheckSquare, BarChart3, Settings, Dumbbell } from "lucide-react";
 import { clsx } from "clsx";
 
 const NAV_ITEMS = [
@@ -11,6 +11,11 @@ const NAV_ITEMS = [
     href: "/dashboard",
     label: "TODAY",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/workouts",
+    label: "WORKOUTS",
+    icon: Dumbbell,
   },
   {
     href: "/calendar",
