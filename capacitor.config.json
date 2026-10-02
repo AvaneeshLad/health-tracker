@@ -4,6 +4,7 @@
   "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
+    "url": "https://winter-arc-chi-tawny.vercel.app",
     "cleartext": true
   }
 }
